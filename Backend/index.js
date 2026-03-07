@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { isAuth } from "./Middleware/isAuth";
 import cors from "cors"
+import { PrismaClient } from "@prisma/client";
 
 dotenv.config(); // Load .env variables
 
