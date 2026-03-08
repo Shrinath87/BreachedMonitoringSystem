@@ -1,46 +1,47 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { findUserByEmail } = require('../models/userModel');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { Pool } = require("pg");
+const { PrismaPg } = require("@prisma/adapter-pg");
+const { PrismaClient } = require("@prisma/client");
 
-const login = async (req, res) => {
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res.status(400).json({ message: "Email and password are required" });
     }
 
-    // Find user in database
-    const user = findUserByEmail(email);
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Compare password using bcrypt
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    const valid = await bcrypt.compare(password, user.password);
+
+    if (!valid) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { userId: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: "1h" }
     );
 
-    // Return token and user details (exclude password)
-    const { password: _password, ...userDetails } = user;
-    return res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: userDetails,
+    res.json({
+      message: "Login successful",
+      token
     });
   } catch (error) {
-    console.error('Login error:', error.message);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Login error:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-module.exports = { login };
