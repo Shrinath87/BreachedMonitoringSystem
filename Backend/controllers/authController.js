@@ -41,3 +41,47 @@ exports.login = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.signup = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already in use" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        ...(role && { role })
+      }
+    });
+
+    const token = jwt.sign(
+      { userId: newUser.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({
+      message: "User created successfully",
+      token
+    });
+  } catch (error) {
+    console.error("Signup error:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
