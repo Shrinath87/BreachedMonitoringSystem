@@ -1,0 +1,5 @@
+484f747 Update Backend
+5c90291 Merge pull request #6 from PRAJWALPGR/main
+d03940d Merge milestone4-login-api: Prisma ORM + MySQL + JWT login API
+093895e Milestone 4: Implement Login API using Prisma ORM with MySQL and JWT authentication
+534f1af feat: switch to MySQL with Prisma v5, add migration and seed
