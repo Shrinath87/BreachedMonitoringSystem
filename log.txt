@@ -1,0 +1,40 @@
+* 484f747 (HEAD -> update-backend-api, myfork/update-backend-api, main) Update Backend
+*   5c90291 (origin/main, origin/HEAD) Merge pull request #6 from PRAJWALPGR/main
+|\  
+| * d03940d Merge milestone4-login-api: Prisma ORM + MySQL + JWT login API
+|/| 
+| * 093895e Milestone 4: Implement Login API using Prisma ORM with MySQL and JWT authentication
+| * 534f1af feat: switch to MySQL with Prisma v5, add migration and seed
+| * 290d724 Replace in-memory user storage with Prisma database queries
+| * 9475447 Milestone 4: Implement Login API with JWT Authentication
+|/  
+* 593b855 Delete frontend directory
+* 6456409 Delete Frontend directory
+*   c5ee8d6 Merge pull request #3 from AMANSHARMA-24/main
+|\  
+| * fb1cc40 Your commit message
+| * ee5b402 Fixed breachRoutes import, added isAuth.js, prisma and controllers updates
+* | f8c3ba3 Delete backend directory
+* |   829d459 Merge pull request #4 from PRAJWALPGR/main
+|\ \  
+| |/  
+|/|   
+| * e43e43b Implement Milestone 4: Login API with JWT authentication
+| * dcb7379 Initial plan
+|/  
+| * c0c7d8d (myfork/main, myfork/HEAD) feat: Restructure project layout; replace Prisma with raw MySQL2 driver; implement JWT Auth & React Frontend with cyber-aesthetic styling
+|/  
+* 5935586 Rename config to config.js
+* eddc19b Add isAuth.js middleware file
+*   815effb Merge pull request #2 from AMANSHARMA-24/main
+|\  
+| * 2b9e884 Add backend folder structure with demo files
+| * 3c8cfe1 Update gitignore to ignore env and node_modules
+| * e1ac1b2 Update .gitignore
+| * 8333cf3 Delete Backend/.env
+| * 707429b Delete Backend/node_modules directory
+| * c0e39fc Added auth middleware and updated backend setup
+| * a0a48dd Add Express server setup with dotenv and nodemon
+|/  
+* 312f4b7 Rename Readme.md to README.md
+* 5a320c2 Add initial Readme.md file

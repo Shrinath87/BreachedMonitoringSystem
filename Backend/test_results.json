@@ -1,0 +1,18 @@
+[
+  {
+    "name": "TEST 1: Successful Signup",
+    "status": 201,
+    "jwtPresent": true,
+    "bcryptVerified": true
+  },
+  {
+    "name": "TEST 2: Duplicate Email",
+    "status": 409,
+    "message": "Email already in use"
+  },
+  {
+    "name": "TEST 3: Missing Fields",
+    "status": 400,
+    "message": "Name, email, and password are required"
+  }
+]
