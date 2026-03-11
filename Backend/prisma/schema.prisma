@@ -7,11 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique(map: "User_email_key")
-  password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
+model Users {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password_hash String
+  created_at    DateTime @default(now())
+
+  monitoredEmails MonitoredEmails[]
+}
+
+model MonitoredEmails {
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  email              String
+  monitoring_enabled Boolean  @default(true)
+  created_at         DateTime @default(now())
+
+  user          Users           @relation(fields: [user_id], references: [id])
+  breachRecords BreachRecords[]
+}
+
+model BreachRecords {
+  id                 Int      @id @default(autoincrement())
+  monitored_email_id Int
+  breach_name        String
+  breach_date        DateTime?
+  description        String?
+  source             String?
+  created_at         DateTime @default(now())
+
+  monitoredEmail MonitoredEmails @relation(fields: [monitored_email_id], references: [id])
 }
