@@ -2,10 +2,11 @@
   "name": "breach-monitoring-backend",
   "version": "1.0.0",
   "description": "Breach Monitoring System - Backend API",
-  "main": "server.js",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",

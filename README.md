@@ -10,7 +10,7 @@ This project is a **Breach Monitoring System**.
 
 The system allows users to:
 
-* Sign up and log in
+* Sign up and logedin git status
 * Enter their email address
 * View all known data breaches related to that email
 * Enable monitoring for that email
