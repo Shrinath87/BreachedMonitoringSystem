@@ -11,9 +11,11 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const cron = require("node-cron");
-const axios = require("axios");
-const { PrismaClient } = require("@prisma/client");
+import cron from "node-cron";
+import axios from "axios";
+import { PrismaClient } from "@prisma/client";
+import { getStoredBreachNames, insertNewBreaches } from "../services/breachService.js";
+import { sendBreachAlertEmail } from "../services/emailService.js";
 
 const prisma = new PrismaClient();
 
@@ -75,11 +77,7 @@ async function processMonitoredEmail(monitoredRecord) {
   console.log(`[CronJob] Checking breaches for: ${monitoredEmail}`);
 
   // 1️⃣  Get existing breach names from the DB (our baseline)
-  const existingRecords = await prisma.breachRecord.findMany({
-    where: { monitoredEmailId },
-    select: { breachName: true },
-  });
-  const oldBreachNames = new Set(existingRecords.map((r) => r.breachName));
+  const oldBreachNames = await getStoredBreachNames(monitoredEmailId);
 
   // 2️⃣  Fetch fresh breach data from the API
   const latestBreaches = await fetchBreachesFromAPI(monitoredEmail);
@@ -102,49 +100,19 @@ async function processMonitoredEmail(monitoredRecord) {
     newBreaches.map((b) => b.Name)
   );
 
-  // 4️⃣  Insert new breaches into the database
-  const insertedNames = [];
-  for (const breach of newBreaches) {
-    try {
-      await prisma.breachRecord.create({
-        data: {
-          monitoredEmailId,
-          breachName: breach.Name,
-          breachDate: breach.BreachDate || null,
-          description: breach.Description || null,
-          dataClasses: breach.DataClasses
-            ? breach.DataClasses.join(", ")
-            : null,
-        },
-      });
-      insertedNames.push(breach.Name);
+  // 4️⃣  Insert new breaches into the database via breachService
+  const insertedRecords = await insertNewBreaches(monitoredEmailId, newBreaches);
+  const insertedNames = insertedRecords.map((r) => r.breachName);
 
-      // 5️⃣  Send alert email (Phase 8 — Nodemailer integration)
-      //     For now we log the intent; wire sendAlertEmail() here later.
-      await sendAlertEmail({
-        toEmail: user.email,
-        monitoredEmail,
-        breach,
-      });
-    } catch (insertErr) {
-      // Unique constraint violation means another process already inserted it — skip
-      if (insertErr.code === "P2002") {
-        console.log(`[CronJob]   ↳ Already recorded: ${breach.Name} (race condition skipped)`);
-      } else {
-        console.error(`[CronJob]   ✗ Insert error for ${breach.Name}:`, insertErr.message);
-      }
-    }
+  // 5️⃣  Send alert email if new records were inserted
+  if (insertedRecords.length > 0 && user?.email) {
+    await sendBreachAlertEmail(user.email, monitoredEmail, insertedRecords);
   }
 
   return { email: monitoredEmail, skipped: false, newBreaches: insertedNames };
 }
 
-// ── Email alert placeholder (Phase 8 will fully implement this) ───────────────
-async function sendAlertEmail({ toEmail, monitoredEmail, breach }) {
-  // Phase 8 TODO: Replace this console.log with actual Nodemailer call.
-  // Example Nodemailer snippet is in utils/mailer.js (to be created in Phase 8).
-  console.log(`[CronJob] 📧 ALERT → To: ${toEmail} | Email monitored: ${monitoredEmail} | New breach: ${breach.Name} (${breach.BreachDate || "date unknown"})`);
-}
+// ── Email alert is now handled by services/emailService.js ────────────────────
 
 // ── Main cron job handler ─────────────────────────────────────────────────────
 async function runBreachCheckCron() {
@@ -210,4 +178,4 @@ function startCronJob() {
 }
 
 // ── Export for use in server.js ───────────────────────────────────────────────
-module.exports = { startCronJob, runBreachCheckCron };
+export { startCronJob, runBreachCheckCron };

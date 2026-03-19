@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 const isAuth = async (req, res, next) => {
   // Support token from cookie OR Authorization header (Bearer token)
@@ -25,4 +25,4 @@ const isAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { isAuth };
+export { isAuth };

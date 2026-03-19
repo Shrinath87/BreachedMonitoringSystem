@@ -1,42 +1,45 @@
 generator client {
   provider = "prisma-client-js"
-
 }
 
 datasource db {
   provider = "mysql"
-url      = env("DATABASE_URL") // ✅ Works in Prisma 5
+  url      = env("DATABASE_URL")
 }
 
-model Users {
-  id            Int      @id @default(autoincrement())
-  name          String
-  email         String   @unique
-  password_hash String
-  created_at    DateTime @default(now())
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
 
-  monitoredEmails MonitoredEmails[]
+  monitoredEmails MonitoredEmail[]
 }
 
-model MonitoredEmails {
-  id                 Int      @id @default(autoincrement())
-  user_id            Int
-  email              String
-  monitoring_enabled Boolean  @default(true)
-  created_at         DateTime @default(now())
+model MonitoredEmail {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  monitoredEmail String
+  createdAt      DateTime @default(now())
 
-  user          Users           @relation(fields: [user_id], references: [id])
-  breachRecords BreachRecords[]
+  user          User          @relation(fields: [userId], references: [id])
+  breachRecords BreachRecord[]
+
+  @@unique([userId, monitoredEmail])
 }
 
-model BreachRecords {
-  id                 Int      @id @default(autoincrement())
-  monitored_email_id Int
-  breach_name        String
-  breach_date        DateTime?
-  description        String?
-  source             String?
-  created_at         DateTime @default(now())
+model BreachRecord {
+  id               Int      @id @default(autoincrement())
+  monitoredEmailId Int
+  breachName       String
+  breachDate       String?
+  description      String?  @db.Text
+  dataClasses      String?  @db.Text
+  createdAt        DateTime @default(now())
 
-  monitoredEmail MonitoredEmails @relation(fields: [monitored_email_id], references: [id])
+  monitoredEmail MonitoredEmail @relation(fields: [monitoredEmailId], references: [id])
+
+  @@unique([monitoredEmailId, breachName])
 }

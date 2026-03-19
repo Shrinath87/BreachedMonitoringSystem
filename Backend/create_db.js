@@ -1,4 +1,4 @@
-const mysql = require('mysql2/promise');
+import mysql from 'mysql2/promise';
 
 // Try multiple passwords to find the correct one
 const passwords = ['P@ssword', 'password', 'root', 'mysql', '123456', 'admin', 'Admin@123', 'P@ss123', 'Welcome1', 'Mysql@123', 'Prajwal', 'prajwal', 'Prajwal@1', 'cyber', 'Cyber123', 'breach', 'Breach123'];
@@ -31,14 +31,3 @@ async function run() {
 }
 
 run().catch(e => { console.error('Error:', e.message); process.exit(1); });
-
-
-
-
-
-
-
-
-
-
-

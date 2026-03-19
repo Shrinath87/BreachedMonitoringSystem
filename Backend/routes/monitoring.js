@@ -1,12 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const { isAuth } = require("../Middleware/isAuth");
-const {
+import express from "express";
+import { isAuth } from "../Middleware/isAuth.js";
+import {
   enableMonitoring,
   listMonitoredEmails,
   disableMonitoring,
   getStoredBreaches,
-} = require("../controllers/monitoringController");
+} from "../controllers/monitoringController.js";
+
+const router = express.Router();
 
 // All monitoring routes require authentication
 router.use(isAuth);
@@ -23,4 +24,4 @@ router.delete("/disable", disableMonitoring);
 // GET    /api/monitoring/breaches/:email  — view stored breach history
 router.get("/breaches/:email", getStoredBreaches);
 
-module.exports = router;
+export default router;

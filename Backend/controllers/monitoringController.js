@@ -1,5 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
-const axios = require("axios");
+import { PrismaClient } from "@prisma/client";
+import axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
  * Saves the email in MonitoredEmails table and takes a
  * baseline snapshot of all current breaches into BreachRecords.
  */
-exports.enableMonitoring = async (req, res) => {
+export const enableMonitoring = async (req, res) => {
   try {
     const userId = req.userId; // set by isAuth middleware
     const { monitoredEmail } = req.body;
@@ -95,7 +95,7 @@ exports.enableMonitoring = async (req, res) => {
  * GET /api/monitoring/list
  * Returns all emails being monitored for the logged-in user.
  */
-exports.listMonitoredEmails = async (req, res) => {
+export const listMonitoredEmails = async (req, res) => {
   try {
     const userId = req.userId;
 
@@ -122,7 +122,7 @@ exports.listMonitoredEmails = async (req, res) => {
  * Body: { monitoredEmail: "victim@example.com" }
  * Removes the monitored email and all its breach records.
  */
-exports.disableMonitoring = async (req, res) => {
+export const disableMonitoring = async (req, res) => {
   try {
     const userId = req.userId;
     const { monitoredEmail } = req.body;
@@ -159,7 +159,7 @@ exports.disableMonitoring = async (req, res) => {
  * GET /api/monitoring/breaches/:email
  * Returns stored breach records for the given monitored email.
  */
-exports.getStoredBreaches = async (req, res) => {
+export const getStoredBreaches = async (req, res) => {
   try {
     const userId = req.userId;
     const { email } = req.params;
