@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -35,8 +35,8 @@ model BreachRecord {
   monitoredEmailId Int
   breachName       String
   breachDate       String?
-  description      String?  @db.Text
-  dataClasses      String?  @db.Text
+  description      String?
+  dataClasses      String?
   createdAt        DateTime @default(now())
 
   monitoredEmail MonitoredEmail @relation(fields: [monitoredEmailId], references: [id])
